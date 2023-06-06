@@ -1,21 +1,42 @@
 function converter() {
-    var num = document.getElementById('numero').value
+    // Obtém o valor de entrada do elemento HTML
+    var entrada = document.getElementById('numero').value
     var res = document.getElementById('resultado')
-    if (num === '') {
-        res.textContent = 'Digite um número romano ou arábico'
+
+    if (entrada === '') {
+    // Verifica se o campo de entrada está vazio
+        window.alert('Digite um número romano ou arábico válido!')
         return
     }
-    if (NumeroRomano(num)) {
-        res.textContent = 'Número arábico correspondente: ' + RomanoArabico(num.toUpperCase())
+    entrada = entrada.toUpperCase()
+    if (NumeroRomano(entrada)) { 
+    // Verifica se a entrada é um número romano válido
+        var arabico = RomanoArabico(entrada.toUpperCase()) // Converte o número romano para arábico
+        if (arabico !== -1) {
+            res.textContent = 'Número arábico correspondente: ' + arabico
+        } 
+    } else if (NumeroArabico(entrada)) {
+        var romano = ArabicoRomano(parseInt(entrada)) // Converte o número arábico para romano
+        if( romano !== '') {
+            res.textContent = 'Número romano correspondente: ' + romano
+        } else {
+            window.alert('Número arábico inválido!')
+        }
     } else {
-        res.textContent = 'Número romano correspondente: ' + ArabicoRomano(num)
+        window.alert('Digite um número arábico válido! Este conversor vai de 1 até 3999.') 
     }
-}
+} 
 function NumeroRomano(num) {
-    var numromano = /^(M|CM|D|CD|C|XC|L|XL|X|IX|V|IV|I)+$/
-    return numromano.test(num)
+// Verifica se a entrada corresponde ao padrão de um número romano válido
+    var numRomano = /^(M|CM|D|CD|C|XC|L|XL|X|IX|V|IV|I)+$/
+    return numRomano.test(num) // Verifica se a entrada corresponde ao padrão de um número romano válido
+}
+function NumeroArabico(num) {
+    var numArabico = /^[1-9][0-9]*$/
+    return numArabico.test(num) // Verifica se a entrada corresponde ao padrão de um número arábico válido
 }
 function RomanoArabico(numeroromano) {
+// Mapeia cada caractere romano a um valor arábico correspondente
     var letras = {
         'M': 1000,
         'CM': 900,
@@ -31,23 +52,38 @@ function RomanoArabico(numeroromano) {
         'IV': 4,
         'I': 1
     }
-    var arabico = 0
-    for ( var i = 0; i < numeroromano.length; i++) {
-        var numeroatual = numeroromano[i]
-        var numatualvalor = letras[numeroatual]
-        var proxnumero = numeroromano[i + 1]
-        var proxnumerovalor = letras[proxnumero]
 
-        if (proxnumero && proxnumerovalor > numatualvalor) {
-        arabico += proxnumerovalor - numatualvalor
-            i++
+    var arabico = 0
+
+    for ( var i = 0; i < numeroromano.length; i++) {
+    // Obtém o caractere romano atual
+        var caractereatual = numeroromano[i]
+    // Obtém o valor arábico correspondente ao caractere atual
+        var valorcaractereAtual = letras[caractereatual]
+    // Obtém o próximo caractere romano( se houver )
+        var proxCaractere = numeroromano[i + 1]
+    // Obtém o valor arábico correspondente ao próximo caractere( se houver )
+        var valorproxCaractere = letras[proxCaractere]
+
+        if (proxCaractere && valorproxCaractere > valorcaractereAtual) {
+            if (valorproxCaractere / valorcaractereAtual === 10 || valorproxCaractere / valorcaractereAtual === 5) {
+                // Realiza a subtração se o próximo caractere for maior que o atual
+                arabico += valorproxCaractere - valorcaractereAtual
+                i++
+            } else {
+                return -1
+            }
         } else {
-        arabico += numatualvalor
+            arabico += valorcaractereAtual
         }
     }
     return arabico
 }
-function ArabicoRomano(numeroarabico) {
+function ArabicoRomano(numeroArabico) {
+    if (numeroArabico < 0 || numeroArabico >=4000) {
+        return window.alert('Este conversor vai de 1 até 3999.')
+    }
+// Mapeia cada valor arábico a um caractere romano correspondente
     var numeros = [
         { arabic: 1000, roman: 'M' },
         { arabic: 900, roman: 'CM' },
@@ -66,9 +102,10 @@ function ArabicoRomano(numeroarabico) {
       var romano = ''
 
       for ( var i = 0; i < numeros.length; i++) {
-        while(numeroarabico >= numeros[i].arabic) {
+        while(numeroArabico >= numeros[i].arabic) {
+    // Verifica se o número arábico atual é maior ou igual ao valor arábico correspondente
             romano += numeros[i].roman
-            numeroarabico -= numeros[i].arabic
+            numeroArabico -= numeros[i].arabic
         }
       }
       return romano
